@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/habit.dart';
 import '../services/storage_service.dart';
+import '../services/notification_service.dart';
 
 class HabitCreateScreen extends StatefulWidget {
   final Habit? habit;
@@ -18,6 +19,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen> {
   String selectedFrequency = 'Daily';
   int targetCount = 1;
   String selectedColor = 'blue';
+  TimeOfDay? reminderTime;
   
   final List<String> frequencies = ['Daily', 'Weekly', 'Monthly'];
   final Map<String, Color> colors = {
@@ -57,8 +59,14 @@ class _HabitCreateScreenState extends State<HabitCreateScreen> {
 
     if (widget.habit != null) {
       await StorageService.updateHabit(habit);
+      await NotificationService.cancelHabitReminder(habit.id);
     } else {
       await StorageService.addHabit(habit);
+    }
+
+    // Schedule reminder if time is set
+    if (reminderTime != null) {
+      await NotificationService.scheduleHabitReminder(habit, reminderTime!);
     }
 
     Navigator.pop(context);
@@ -160,6 +168,34 @@ class _HabitCreateScreenState extends State<HabitCreateScreen> {
                   ),
                 ),
               ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Reminder Time
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.alarm),
+                title: Text(reminderTime != null 
+                    ? 'Reminder: ${reminderTime!.format(context)}'
+                    : 'Set Reminder Time'),
+                subtitle: const Text('Get notified to complete this habit'),
+                trailing: reminderTime != null 
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () => setState(() => reminderTime = null),
+                      )
+                    : const Icon(Icons.arrow_forward_ios),
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: reminderTime ?? TimeOfDay.now(),
+                  );
+                  if (time != null) {
+                    setState(() => reminderTime = time);
+                  }
+                },
+              ),
             ),
             
             const SizedBox(height: 24),

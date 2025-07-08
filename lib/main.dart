@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'services/ad_service.dart';
 import 'services/storage_service.dart';
+import 'services/notification_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/habits_screen.dart';
 import 'screens/analytics_screen.dart';
 import 'screens/settings_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AdService.initialize();
+  await NotificationService.initialize();
   runApp(const TasksyApp());
 }
 
@@ -18,7 +21,8 @@ class TasksyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return OverlaySupport.global(
+      child: MaterialApp(
       title: 'Tasksy - Professional Todo App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -59,6 +63,7 @@ class TasksyApp extends StatelessWidget {
         ),
       ),
       home: const SplashScreen(),
+      ),
     );
   }
 }

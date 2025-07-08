@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/task.dart';
 import '../services/storage_service.dart';
+import '../services/notification_service.dart';
+import '../services/popup_service.dart';
 
 class TaskCreateScreen extends StatefulWidget {
   final Task? task;
@@ -94,11 +96,26 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
     if (widget.task != null) {
       await StorageService.updateTask(task);
+      await NotificationService.cancelTaskReminder(task.id);
     } else {
       await StorageService.addTask(task);
     }
 
+    // Schedule reminder if due date is set
+    if (task.dueDate != null) {
+      await NotificationService.scheduleTaskReminder(task);
+      if (task.isRecurring) {
+        await NotificationService.scheduleRecurringTaskReminder(task);
+      }
+    }
+
     Navigator.pop(context);
+    
+    if (widget.task != null) {
+      PopupService.showToast('Task updated successfully');
+    } else {
+      PopupService.showTaskCreated(context, task.title);
+    }
   }
 
   @override

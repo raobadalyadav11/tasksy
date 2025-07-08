@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/storage_service.dart';
 import '../services/ad_service.dart';
+import '../services/notification_service.dart';
+import 'reminder_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -40,6 +42,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       settings[key] = value;
     });
     await StorageService.saveSettings(settings);
+    
+    // Update daily reminder when notification settings change
+    if (key == 'notifications' || key == 'reminderTime') {
+      if (value == true || key == 'reminderTime') {
+        await NotificationService.scheduleDailyReminder();
+      } else {
+        await NotificationService.cancelAllNotifications();
+      }
+    }
   }
 
   Future<void> _showResetDialog() async {
@@ -127,11 +138,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  title: const Text('Daily Reminder Time'),
-                  subtitle: Text('Remind me at ${settings['reminderTime']}'),
+                  title: const Text('Reminder Settings'),
+                  subtitle: const Text('Manage all notification preferences'),
                   leading: const Icon(Icons.schedule),
                   trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () => _selectReminderTime(),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ReminderScreen()),
+                  ),
                 ),
               ],
             ),
@@ -183,6 +197,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   onTap: _showThemeSelection,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Notification Management
+          _buildSectionHeader('Notification Management'),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  title: const Text('Test Notification'),
+                  subtitle: const Text('Send a test notification'),
+                  leading: const Icon(Icons.notifications_active),
+                  trailing: const Icon(Icons.send),
+                  onTap: () async {
+                    await NotificationService.showInstantNotification(
+                      'Test Notification',
+                      'This is a test notification from Tasksy!',
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Test notification sent!')),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  title: const Text('Pending Notifications'),
+                  subtitle: const Text('View scheduled notifications'),
+                  leading: const Icon(Icons.schedule),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () => _showPendingNotifications(),
                 ),
               ],
             ),
@@ -293,9 +341,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _selectReminderTime() async {
+    final currentTimeStr = settings['reminderTime'] ?? '09:00';
+    final timeParts = currentTimeStr.split(':');
+    final currentTime = TimeOfDay(
+      hour: int.parse(timeParts[0]),
+      minute: int.parse(timeParts[1]),
+    );
+    
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: currentTime,
     );
     if (time != null) {
       final timeString = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
@@ -408,6 +463,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
             child: const Text('Rate Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showPendingNotifications() async {
+    final pending = await NotificationService.getPendingNotifications();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Pending Notifications'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: pending.isEmpty
+              ? const Text('No pending notifications')
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: pending.length,
+                  itemBuilder: (context, index) {
+                    final notification = pending[index];
+                    return ListTile(
+                      title: Text(notification.title ?? 'No title'),
+                      subtitle: Text(notification.body ?? 'No body'),
+                      leading: const Icon(Icons.notifications),
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
           ),
         ],
       ),

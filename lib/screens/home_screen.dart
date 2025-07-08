@@ -3,6 +3,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../models/task.dart';
 import '../services/storage_service.dart';
 import '../services/ad_service.dart';
+import '../services/notification_service.dart';
+import '../services/popup_service.dart';
 import '../widgets/task_card.dart';
 import '../widgets/progress_card.dart';
 import 'task_create_screen.dart';
@@ -48,6 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
       _filterTasks();
       isLoading = false;
     });
+    
+    // Check for overdue tasks and send notifications
+    for (final task in loadedTasks) {
+      if (!task.isCompleted && task.dueDate != null && task.dueDate!.isBefore(DateTime.now())) {
+        await NotificationService.scheduleOverdueReminder(task);
+      }
+    }
   }
 
   void _filterTasks() {
@@ -81,22 +90,29 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _toggleTask(String taskId) async {
     final taskIndex = tasks.indexWhere((t) => t.id == taskId);
     if (taskIndex != -1) {
+      final task = tasks[taskIndex];
       setState(() {
-        tasks[taskIndex].isCompleted = !tasks[taskIndex].isCompleted;
+        task.isCompleted = !task.isCompleted;
         _filterTasks();
       });
-      await StorageService.updateTask(tasks[taskIndex]);
+      await StorageService.updateTask(task);
 
-      // Show interstitial ad after every 3 completed tasks
-      if (completedTasksCount % 3 == 0 && completedTasksCount > 0) {
-        AdService.showInterstitialAd();
+      if (task.isCompleted) {
+        PopupService.showTaskCompletionOverlay(task.title);
+        // Show interstitial ad after every 3 completed tasks
+        if (completedTasksCount % 3 == 0 && completedTasksCount > 0) {
+          AdService.showInterstitialAd();
+        }
       }
     }
   }
 
   Future<void> _deleteTask(String taskId) async {
+    final task = tasks.firstWhere((t) => t.id == taskId);
+    await NotificationService.cancelTaskReminder(taskId);
     await StorageService.deleteTask(taskId);
     _loadTasks();
+    PopupService.showToast('Task "${task.title}" deleted');
   }
 
   void _showSearchDialog() {

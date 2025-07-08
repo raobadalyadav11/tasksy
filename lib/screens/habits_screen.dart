@@ -3,6 +3,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../models/habit.dart';
 import '../services/storage_service.dart';
 import '../services/ad_service.dart';
+import '../services/notification_service.dart';
+import '../services/popup_service.dart';
 import '../widgets/habit_card.dart';
 import 'habit_create_screen.dart';
 import 'habit_detail_screen.dart';
@@ -51,6 +53,11 @@ class _HabitsScreenState extends State<HabitsScreen> {
         habit.lastCompleted = today;
         
         await StorageService.updateHabit(habit);
+        await NotificationService.scheduleStreakCelebration(habit);
+        
+        // Show streak overlay
+        PopupService.showHabitStreakOverlay(habit.name, habit.streak);
+        
         setState(() {});
         
         // Show rewarded ad for streak milestones
@@ -89,8 +96,11 @@ class _HabitsScreenState extends State<HabitsScreen> {
   }
 
   Future<void> _deleteHabit(String habitId) async {
+    final habit = habits.firstWhere((h) => h.id == habitId);
+    await NotificationService.cancelHabitReminder(habitId);
     await StorageService.deleteHabit(habitId);
     _loadHabits();
+    PopupService.showToast('Habit "${habit.name}" deleted');
   }
 
   @override

@@ -13,6 +13,12 @@ dependencies:
   google_mobile_ads: ^5.0.0
   fl_chart: ^0.68.0
   introduction_screen: ^3.1.12
+  flutter_local_notifications: ^17.2.2
+  audioplayers: ^6.0.0
+  timezone: ^0.9.4
+  another_flushbar: ^1.12.30
+  fluttertoast: ^8.2.8
+  overlay_support: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +31,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  
+  assets:
+    - assets/sounds/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
