@@ -1,7 +1,11 @@
 name: tasksy
-description: "A new Flutter project."
+description: "Professional Todo & Habit Tracker - Boost your productivity with smart task management, habit tracking, and detailed analytics."
 
 version: 1.0.0+1
+
+homepage: https://tasksy.app
+repository: https://github.com/tasksy/tasksy-app
+issue_tracker: https://github.com/tasksy/tasksy-app/issues
 
 environment:
   sdk: ^3.8.0
@@ -34,6 +38,8 @@ flutter:
   
   assets:
     - assets/sounds/
+    - assets/images/
+    - assets/icons/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -4,6 +4,8 @@ import '../services/ad_service.dart';
 import '../services/notification_service.dart';
 import '../services/popup_service.dart';
 import 'reminder_screen.dart';
+import 'about_screen.dart';
+import 'help_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -286,10 +288,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  title: const Text('Terms of Service'),
-                  leading: const Icon(Icons.description),
+                  title: const Text('Help & FAQ'),
+                  leading: const Icon(Icons.help),
                   trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () => _showTermsOfService(),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HelpScreen()),
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  title: const Text('About Tasksy'),
+                  leading: const Icon(Icons.info),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AboutScreen()),
+                  ),
                 ),
                 const Divider(height: 1),
                 ListTile(
