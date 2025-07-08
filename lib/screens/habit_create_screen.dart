@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/habit.dart';
 import '../services/storage_service.dart';
 import '../services/notification_service.dart';
+import '../services/popup_service.dart';
 
 class HabitCreateScreen extends StatefulWidget {
   final Habit? habit;
@@ -70,6 +71,12 @@ class _HabitCreateScreenState extends State<HabitCreateScreen> {
     }
 
     Navigator.pop(context);
+    
+    if (widget.habit != null) {
+      PopupService.showToast('Habit updated successfully');
+    } else {
+      PopupService.showHabitCreated(context, habit.name);
+    }
   }
 
   @override

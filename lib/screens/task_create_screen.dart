@@ -3,6 +3,7 @@ import '../models/task.dart';
 import '../services/storage_service.dart';
 import '../services/notification_service.dart';
 import '../services/popup_service.dart';
+import '../services/popup_service.dart';
 
 class TaskCreateScreen extends StatefulWidget {
   final Task? task;
@@ -110,6 +111,12 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     }
 
     Navigator.pop(context);
+    
+    if (widget.task != null) {
+      PopupService.showToast('Task updated successfully');
+    } else {
+      PopupService.showTaskCreated(context, task.title);
+    }
     
     if (widget.task != null) {
       PopupService.showToast('Task updated successfully');

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
+import '../services/popup_service.dart';
 
 class ReminderScreen extends StatefulWidget {
   const ReminderScreen({super.key});
@@ -203,9 +204,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
                       'Daily Productivity Check',
                       '🌟 Ready to tackle your tasks and habits today?',
                     );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Test reminder sent!')),
-                    );
+                    PopupService.showInfoFlushbar(context, 'Test reminder sent!');
                   },
                 ),
               ],
@@ -325,9 +324,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
     if (confirmed == true) {
       await NotificationService.cancelAllNotifications();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All notifications cancelled')),
-      );
+      PopupService.showToast('All notifications cancelled');
     }
   }
 }

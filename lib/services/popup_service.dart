@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:overlay_support/overlay_support.dart';
+import 'package:overlay_support/overlay_support.dart' hide Toast;
 
 class PopupService {
   // Fancy top/bottom popups using another_flushbar
-  static void showSuccessFlushbar(BuildContext context, String message, {String? title}) {
+  static void showSuccessFlushbar(
+    BuildContext context,
+    String message, {
+    String? title,
+  }) {
     Flushbar(
       title: title ?? 'Success',
       message: message,
@@ -19,7 +23,11 @@ class PopupService {
     ).show(context);
   }
 
-  static void showErrorFlushbar(BuildContext context, String message, {String? title}) {
+  static void showErrorFlushbar(
+    BuildContext context,
+    String message, {
+    String? title,
+  }) {
     Flushbar(
       title: title ?? 'Error',
       message: message,
@@ -33,7 +41,11 @@ class PopupService {
     ).show(context);
   }
 
-  static void showInfoFlushbar(BuildContext context, String message, {String? title}) {
+  static void showInfoFlushbar(
+    BuildContext context,
+    String message, {
+    String? title,
+  }) {
     Flushbar(
       title: title ?? 'Info',
       message: message,
@@ -47,7 +59,11 @@ class PopupService {
     ).show(context);
   }
 
-  static void showWarningFlushbar(BuildContext context, String message, {String? title}) {
+  static void showWarningFlushbar(
+    BuildContext context,
+    String message, {
+    String? title,
+  }) {
     Flushbar(
       title: title ?? 'Warning',
       message: message,
@@ -61,7 +77,12 @@ class PopupService {
     ).show(context);
   }
 
-  static void showBottomFlushbar(BuildContext context, String message, {String? title, Color? backgroundColor}) {
+  static void showBottomFlushbar(
+    BuildContext context,
+    String message, {
+    String? title,
+    Color? backgroundColor,
+  }) {
     Flushbar(
       title: title,
       message: message,
@@ -98,7 +119,11 @@ class PopupService {
   }
 
   // Notification-like overlays using overlay_support
-  static void showNotificationOverlay(String title, String message, {VoidCallback? onTap}) {
+  static void showNotificationOverlay(
+    String title,
+    String message, {
+    VoidCallback? onTap,
+  }) {
     showOverlayNotification(
       (context) {
         return Card(
@@ -110,9 +135,16 @@ class PopupService {
                 color: Color(0xFF4A90E2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.notifications, color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.notifications,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
-            title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text(message),
             trailing: const Icon(Icons.close, size: 20),
             onTap: () {
@@ -202,7 +234,11 @@ class PopupService {
           ),
           child: Row(
             children: [
-              const Icon(Icons.local_fire_department, color: Colors.white, size: 32),
+              const Icon(
+                Icons.local_fire_department,
+                color: Colors.white,
+                size: 32,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/storage_service.dart';
 import '../services/ad_service.dart';
 import '../services/notification_service.dart';
+import '../services/popup_service.dart';
 import 'reminder_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -77,18 +78,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirmed == true) {
       await StorageService.clearAllData();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All data has been reset')),
-      );
+      PopupService.showWarningFlushbar(context, 'All data has been reset', title: 'Data Reset');
     }
   }
 
   Future<void> _showThemeSelection() async {
     AdService.showRewardedAd(
       onUserEarnedReward: (ad, reward) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Premium theme unlocked!')),
-        );
+        PopupService.showSuccessFlushbar(context, 'Premium theme unlocked!', title: 'Reward Earned');
       },
     );
   }
@@ -219,9 +216,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       'Test Notification',
                       'This is a test notification from Tasksy!',
                     );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Test notification sent!')),
-                    );
+                    PopupService.showInfoFlushbar(context, 'Test notification sent!');
                   },
                 ),
                 const Divider(height: 1),
@@ -458,9 +453,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Thank you for your feedback!')),
-              );
+              PopupService.showSuccessFlushbar(context, 'Thank you for your feedback!', title: 'Feedback Received');
             },
             child: const Text('Rate Now'),
           ),
